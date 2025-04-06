@@ -1,4 +1,5 @@
 'use client';
+import FileUploadButton from '@/components/buttons/FileUploadButton';
 import { Button } from '@/components/ui/button';
 import { UserButton, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
@@ -10,14 +11,10 @@ const Home: React.FC = () => {
 
 	return (
 		<main className='relative w-screen min-h-screen flex flex-col items-center justify-center overflow-hidden bg-black text-center px-6'>
-			{/* Background Gradient Animation */}
 			<div className='absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,112,243,0.2)_0%,_transparent_70%)] animate-pulse pointer-events-none' />
-
-			{/* Floating Neon Glow */}
 			<div className='absolute top-0 left-0 w-40 h-40 bg-blue-500/25 rounded-full blur-3xl animate-pulse pointer-events-none' />
 			<div className='absolute bottom-0 right-0 w-72 h-72 bg-purple-500/25 rounded-full blur-3xl animate-pulse pointer-events-none' />
 
-			{/* Main Content */}
 			<h1 className='font-black text-6xl sm:text-7xl leading-tight drop-shadow-lg text-white'>
 				Transform Your PDFs
 			</h1>
@@ -58,6 +55,8 @@ const Home: React.FC = () => {
 					</Link>
 				)}
 			</div>
+
+			<FileUploadButton />
 		</main>
 	);
 };

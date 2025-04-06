@@ -3,10 +3,7 @@ import { SignUp } from '@clerk/nextjs';
 export default function SignUpPage() {
 	return (
 		<div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden'>
-			{/* Background Animated Gradient */}
 			<div className='absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,243,112,0.15)_0%,_transparent_60%)] animate-pulse'></div>
-
-			{/* Glassmorphic Container */}
 			<div className='relative backdrop-blur-2xl bg-white/10 p-10 rounded-3xl shadow-2xl border border-white/20 ring-1 ring-green-500/20 transition-transform duration-300 hover:scale-105'>
 				<SignUp
 					signInFallbackRedirectUrl={
@@ -28,8 +25,6 @@ export default function SignUpPage() {
 					}}
 				/>
 			</div>
-
-			{/* Neon Glow Effects */}
 			<div className='absolute top-0 left-0 w-48 h-48 bg-green-500/20 rounded-full blur-3xl animate-pulse'></div>
 			<div className='absolute bottom-0 right-0 w-72 h-72 bg-teal-500/20 rounded-full blur-3xl animate-pulse'></div>
 		</div>

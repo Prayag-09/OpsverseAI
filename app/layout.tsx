@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: 'ReadoraAI: Decoding Your Docs',
+	title: 'OpsVerseAI: Decoding Your Docs',
 	description:
-		'ReadoraAI is an intelligent PDF chat application that empowers you to interact with your documents effortlessly. Decode your PDFs, extract insights, and get answers to your questions with ease',
+		'OpsVerseAI is an intelligent PDF chat application that empowers you to interact with your documents effortlessly. Decode your PDFs, extract insights, and get answers to your questions with ease',
 };
 
 export default function RootLayout({

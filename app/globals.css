@@ -4,7 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* index.css */
 .bg-gradient-custom {
 	background: linear-gradient(to right, #1f2937, #1d4ed8, #111827);
 }
