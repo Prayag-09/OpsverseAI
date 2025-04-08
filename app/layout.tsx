@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { neobrutalism } from '@clerk/themes';
+import ReactQueryProvider from '@/components/providers/ReactQueryProvider';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -30,12 +32,15 @@ export default function RootLayout({
 			appearance={{
 				baseTheme: [neobrutalism],
 			}}>
-			<html lang='en'>
-				<body
-					className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-					{children}
-				</body>
-			</html>
+			<ReactQueryProvider>
+				<html lang='en' suppressHydrationWarning>
+					<body
+						className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+						{children}
+					</body>
+				</html>
+				<Toaster />
+			</ReactQueryProvider>
 		</ClerkProvider>
 	);
 }
