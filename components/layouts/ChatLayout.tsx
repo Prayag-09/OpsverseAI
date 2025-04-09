@@ -7,7 +7,12 @@ import ChatSideBar from '@/components/layouts/ChatSideBar';
 import PDFViewer from '@/components/layouts/PDFView';
 import { DrizzleChat } from '@/lib/postgres/schema';
 import { Menu } from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+	Sheet,
+	SheetTrigger,
+	SheetContent,
+	SheetClose,
+} from '@/components/ui/sheet';
 
 type Props = {
 	chats: DrizzleChat[];
@@ -24,16 +29,16 @@ export default function ChatLayout({
 	currentChatPdfUrl,
 	currentChatPdfName,
 }: Props) {
-	const [isSheetOpen, setIsSheetOpen] = useState(false); // Manage sheet state manually
+	const [isSheetOpen, setIsSheetOpen] = useState(false);
 
 	const handleSheetClose = () => {
-		setIsSheetOpen(false); // Ensure sheet closes and overlay is removed
+		setIsSheetOpen(false); // Explicitly close the sheet
 	};
 
 	return (
 		<div className='flex flex-col h-screen w-full bg-black text-white overflow-hidden'>
 			{/* Mobile Top Bar */}
-			<header className='md:hidden p-4 border-b border-white/10 flex items-center justify-between bg-black/80 backdrop-blur-md z-40'>
+			<header className='md:hidden p-4 border-b border-white/10 flex items-center justify-between bg-black/80 backdrop-blur-md z-50'>
 				<Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
 					<SheetTrigger asChild>
 						<button
@@ -44,13 +49,14 @@ export default function ChatLayout({
 					</SheetTrigger>
 					<SheetContent
 						side='left'
-						className='p-0 w-72 bg-black text-white border-r border-white/10 z-50'
-						onInteractOutside={handleSheetClose} // Close on outside click
-						onEscapeKeyDown={handleSheetClose} // Close on escape key
-					>
+						className='p-0 w-72 bg-black text-white border-r border-white/10 z-60'
+						onInteractOutside={handleSheetClose}
+						onEscapeKeyDown={handleSheetClose}>
 						<h2 className='sr-only'>Chat Navigation</h2>{' '}
 						{/* Accessibility title */}
 						<ChatSideBar chats={chats} chatId={chatId} isPro={isPro} />
+						<SheetClose className='hidden' />{' '}
+						{/* Hidden close button to ensure programmatic closing */}
 					</SheetContent>
 				</Sheet>
 				<h1 className='text-base font-semibold truncate'>
@@ -59,7 +65,7 @@ export default function ChatLayout({
 			</header>
 
 			{/* Main Layout */}
-			<div className='flex flex-1 overflow-hidden z-30'>
+			<div className='flex flex-1 overflow-hidden z-40'>
 				{/* Desktop Sidebar */}
 				<aside className='hidden md:block h-screen border-r border-white/10'>
 					<ChatSideBar chats={chats} chatId={chatId} isPro={isPro} />

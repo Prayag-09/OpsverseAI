@@ -30,7 +30,6 @@ const FileUploadButton: React.FC = () => {
 		},
 		onSuccess: (data) => {
 			toast.success('Chat created successfully!');
-			console.log('Chat created:', data);
 			router.push(`/chat/${data.chat_id}`);
 		},
 		onError: (error: any) => {
@@ -75,7 +74,7 @@ const FileUploadButton: React.FC = () => {
 			'application/pdf': ['.pdf'],
 		},
 		maxFiles: 1,
-		maxSize: 10 * 1024 * 1024, // 10MB
+		maxSize: 10 * 1024 * 1024,
 		onDropRejected: (rejectedFiles) => {
 			const firstFile = rejectedFiles[0];
 			let errorMessage = 'File must be a PDF and under 10MB';
@@ -97,34 +96,36 @@ const FileUploadButton: React.FC = () => {
 		<div className='flex flex-col items-center justify-center w-full max-w-md mt-8 gap-4'>
 			<div
 				{...getRootProps()}
-				className='flex flex-col items-center justify-center w-full h-48 p-4 border-2 border-dashed rounded-lg bg-gray-800/20 border-gray-600/50 hover:border-gray-500/50 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'
-				aria-busy={uploading}>
-				<input {...getInputProps()} aria-label='File upload' />
-				<Upload
-					className={`h-8 w-8 mb-2 ${
-						uploading ? 'text-blue-400 animate-pulse' : 'text-gray-400'
-					}`}
-				/>
-				<p className='text-gray-300 text-center'>
+				className={`flex flex-col items-center justify-center w-full h-52 p-5 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200
+        ${
+					uploading
+						? 'border-blue-500/50 bg-blue-500/10 animate-pulse'
+						: 'bg-gray-800/20 border-gray-600/50 hover:border-gray-400/40'
+				}`}>
+				<input {...getInputProps()} />
+				<Upload className='h-8 w-8 text-gray-400 mb-2' />
+				<p className='text-sm sm:text-base text-gray-300 text-center'>
 					{uploading
-						? 'Uploading file...'
+						? 'Uploading...'
 						: isDragActive
 						? 'Drop PDF here'
-						: 'Drag & drop PDF or click to upload'}
+						: 'Drag and drop a PDF or click to upload'}
 				</p>
-				<p className='text-sm text-gray-500 mt-1'>Max size: 10MB (PDF only)</p>
+				<p className='text-xs text-gray-500 mt-1'>Max size: 10MB (PDF only)</p>
 			</div>
 
-			{error && <p className='text-red-400 text-center max-w-xs'>{error}</p>}
+			{error && (
+				<p className='text-sm text-red-400 text-center max-w-xs'>{error}</p>
+			)}
 
 			{uploadedUrl && (
 				<div className='mt-2 text-center'>
-					<p className='text-green-400 mb-2'>Upload successful!</p>
+					<p className='text-green-400 mb-1'>Upload successful!</p>
 					<a
 						href={uploadedUrl}
 						target='_blank'
 						rel='noopener noreferrer'
-						className='underline text-blue-400 hover:text-blue-300 transition-colors'>
+						className='text-sm underline text-blue-400 hover:text-blue-300 transition-colors'>
 						View PDF
 					</a>
 				</div>

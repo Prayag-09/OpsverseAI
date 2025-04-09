@@ -38,8 +38,14 @@ const SubscriptionButton = ({ isPro }: Props) => {
 		<Button
 			disabled={loading}
 			onClick={handleSub}
-			variant='outline'
-			className='w-full'>
+			size='lg'
+			className={`px-6 py-3 font-semibold text-white rounded-xl transition-all duration-200 backdrop-blur-md
+        ${
+					isPro
+						? 'bg-gradient-to-r from-gray-700 to-gray-900 border border-gray-600 hover:shadow-md'
+						: 'bg-gradient-to-r from-purple-500/20 to-indigo-500/20 border border-purple-500/40 hover:bg-purple-600/30 hover:shadow-purple-600/40'
+				}
+      `}>
 			{loading
 				? isPro
 					? 'Redirecting...'
