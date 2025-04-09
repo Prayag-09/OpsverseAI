@@ -7,8 +7,11 @@ type Metadata = {
 	pageNumber: number;
 };
 
+/**
+ * Queries Pinecone using the embedding vector and returns the closest matches.
+ */
 export const getMatchesFromEmbeddings = async (
-	embeddings: number[],
+	embedding: number[],
 	fileKey: string
 ) => {
 	try {
@@ -21,27 +24,44 @@ export const getMatchesFromEmbeddings = async (
 
 		const queryResult = await namespace.query({
 			topK: 5,
-			vector: embeddings,
+			vector: embedding,
 			includeMetadata: true,
 		});
+
 		return queryResult.matches || [];
 	} catch (error: any) {
-		console.log(error);
-		throw new error();
+		console.error('🔥 Error querying Pinecone:', error);
+		throw new Error('Failed to fetch context from Pinecone');
 	}
 };
 
+/**
+ * Returns a formatted context string based on a user's question and matching embeddings from Pinecone.
+ */
 export const getMatches = async (query: string, fileKey: string) => {
-	const queryEmbeddings = await getEmbedding(query);
-	const matchedResults = await getMatchesFromEmbeddings(
-		queryEmbeddings,
-		fileKey
-	);
+	try {
+		const queryEmbedding = await getEmbedding(query);
 
-	const qualifyingDocs = matchedResults.filter(
-		(match) => match.score && match.score > 0.7
-	);
+		const matchedResults = await getMatchesFromEmbeddings(
+			queryEmbedding,
+			fileKey
+		);
 
-	const docs = qualifyingDocs.map((match) => (match.metadata as Metadata).text);
-	return docs.join('\n').substring(0, 3000); // 5 Vectors
+		// You can tweak this threshold
+		const THRESHOLD = 0.5;
+
+		const topDocs = matchedResults
+			.filter((match) => match.score && match.score >= THRESHOLD)
+			.map((match) => (match.metadata as Metadata).text);
+
+		if (topDocs.length === 0) {
+			console.warn('⚠️ No relevant context found for query:', query);
+			return 'No relevant context found for this query.';
+		}
+
+		return topDocs.join('\n').slice(0, 3000); // limit to ~5 vectors or ~3k characters
+	} catch (error) {
+		console.error('❌ Error fetching matches:', error);
+		return 'Context retrieval failed. Please try again.';
+	}
 };

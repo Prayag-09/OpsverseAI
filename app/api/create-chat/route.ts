@@ -5,61 +5,43 @@ import { Chat as chats } from '@/lib/postgres/schema';
 import { getPublicUrl } from '@/lib/aws/s3.client';
 import { auth } from '@clerk/nextjs/server';
 
-export const POST = async (req: Request) => {
+export async function POST(req: Request) {
 	try {
 		const { userId } = await auth();
 		if (!userId) {
-			return NextResponse.json(
-				{
-					error: 'Unauthorized',
-					details: 'User ID is required',
-				},
-				{ status: 401 }
-			);
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
-		const body = await req.json();
-		const { file_key, fileName } = body;
 
+		const { file_key, fileName } = await req.json();
 		if (!file_key || !fileName) {
 			return NextResponse.json(
-				{
-					error: 'File key and file name are required',
-					details: 'file_key and fileName are required',
-				},
+				{ error: 'Missing file_key or fileName' },
 				{ status: 400 }
 			);
 		}
-		console.log('Attempting to load S3 file to Pinecone:', {
-			file_key,
-			fileName,
-		});
+
+		console.log('Loading S3 file to Pinecone:', { file_key, fileName });
 		await loadS3toPinecone(file_key);
-		const chat_id = await db
+
+		const [chat] = await db
 			.insert(chats)
 			.values({
 				fileKey: file_key,
 				pdfName: fileName,
 				pdfUrl: getPublicUrl(file_key),
-				userId: userId,
+				userId,
 			})
-			.returning({
-				insertedId: chats.id,
-			});
+			.returning({ insertedId: chats.id });
 
-		return NextResponse.json(
-			{
-				chat_id: chat_id[0].insertedId,
-			},
-			{ status: 200 }
-		);
+		return NextResponse.json({ id: chat.insertedId }, { status: 201 });
 	} catch (error) {
+		console.error('Create chat error:', error);
 		return NextResponse.json(
 			{
 				error: 'Internal server error',
 				details: error instanceof Error ? error.message : String(error),
-				stack: error instanceof Error ? error.stack : undefined,
 			},
 			{ status: 500 }
 		);
 	}
-};
+}

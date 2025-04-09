@@ -19,7 +19,7 @@ export const Chat = pgTable('chat', {
 });
 export type DrizzleChat = typeof Chat.$inferSelect;
 
-export const userModel = pgEnum('user_model', ['user', 'model']);
+export const userModel = pgEnum('user_model', ['user', 'assistant']);
 
 export const Message = pgTable('message', {
 	id: serial('id').primaryKey(),
