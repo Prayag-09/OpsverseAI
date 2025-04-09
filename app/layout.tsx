@@ -33,13 +33,16 @@ export default function RootLayout({
 				baseTheme: [neobrutalism],
 			}}>
 			<ReactQueryProvider>
-				<html lang='en' suppressHydrationWarning>
+				<html
+					lang='en'
+					className='h-full scroll-smooth'
+					suppressHydrationWarning>
 					<body
-						className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+						className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
 						{children}
+						<Toaster />
 					</body>
 				</html>
-				<Toaster />
 			</ReactQueryProvider>
 		</ClerkProvider>
 	);
