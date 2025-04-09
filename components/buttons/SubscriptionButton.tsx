@@ -4,22 +4,29 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { useAuth } from '@clerk/nextjs';
 
 type Props = { isPro: boolean };
 
 const SubscriptionButton = ({ isPro }: Props) => {
 	const [loading, setLoading] = useState(false);
+	const { userId } = useAuth();
 
 	const handleSub = async () => {
 		try {
 			setLoading(true);
 			toast.info(
 				isPro
-					? 'Redirecting to Stripe portal...'
+					? 'Redirecting to Stripe Customer Portal...'
 					: 'Creating Stripe checkout session...'
 			);
 
-			const response = await axios.get('/api/stripe');
+			const response = await axios.get('/api/stripe', {
+				params: {
+					userId: userId,
+					isManage: isPro,
+				},
+			});
 
 			if (response.data?.url) {
 				window.location.href = response.data.url;

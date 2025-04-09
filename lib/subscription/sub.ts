@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs/server';
 import { userSubscriptions } from '../postgres/schema';
 
-export const checkSubscription = async (): Promise<boolean> => {
+export const checkSubscription = async () => {
 	try {
 		const { userId } = await auth();
 		if (!userId) {
