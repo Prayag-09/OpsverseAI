@@ -38,8 +38,17 @@ export default function RootLayout({
 					className='h-full scroll-smooth'
 					suppressHydrationWarning>
 					<body
-						className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
-						{children}
+						className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-black`}>
+						{/* Global Background Container */}
+						<div className='relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-black overflow-hidden'>
+							{/* Radial Gradient */}
+							<div className='absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,112,243,0.15)_0%,_transparent_60%)] animate-pulse pointer-events-none' />
+							{/* Top-Left Glow */}
+							<div className='absolute top-0 left-0 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl animate-pulse pointer-events-none' />
+							{/* Bottom-Right Glow */}
+							<div className='absolute bottom-0 right-0 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse pointer-events-none' />
+							{children}
+						</div>
 						<Toaster />
 					</body>
 				</html>

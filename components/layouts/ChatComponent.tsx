@@ -2,16 +2,16 @@
 
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useChat } from '@ai-sdk/react'; // Updated import
+import { useChat } from '@ai-sdk/react';
 import { Send } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import MessageList from './MessagesList';
+import MessageList from './MessageList';
 
 type Message = {
 	id: string;
 	content: string;
-	role: 'user' | 'assistant'; // Aligned with useChat and your API
+	role: 'user' | 'assistant';
 	createdAt: string;
 };
 
@@ -36,64 +36,57 @@ export default function ChatComponent({ chatId }: Props) {
 		handleInputChange,
 		handleSubmit,
 		error: chatError,
+		isLoading,
 	} = useChat({
 		api: '/api/chat',
 		id: chatId.toString(),
 		initialMessages: initialMessages as any,
 		body: { chatId },
-		onError: (error) => {
-			console.error('Chat error:', error);
-		},
-		onFinish: (message) => {
-			console.log('Chat finished:', message);
-		},
+		onError: (error) => console.error('Chat error:', error),
 	});
 
-	if (isLoadingMessages) {
-		return <div className='p-4 text-gray-400'>Loading chat history...</div>;
-	}
-	if (queryError) {
-		return (
-			<div className='p-4 text-red-400'>
-				Error loading chat: {(queryError as Error).message}
-			</div>
-		);
-	}
-	if (chatError) {
-		return (
-			<div className='p-4 text-red-400'>Chat error: {chatError.message}</div>
-		);
-	}
-
 	return (
-		<div className='flex flex-col h-full bg-gray-900 text-white'>
-			<div className='sticky top-0 z-10 bg-gray-800 p-4 border-b border-gray-700'>
-				<h3 className='text-xl font-bold'>Chat</h3>
+		<div className='flex flex-col h-full text-white bg-black overflow-hidden border border-white/20 rounded-lg'>
+			<div className='sticky top-0 z-10 bg-black p-4 border-b border-white/20 shadow-md'>
+				<h3 className='text-xl font-bold tracking-tight text-white'>
+					PDF Chat
+				</h3>
 			</div>
 
-			<div className='flex-1 overflow-y-auto p-4' role='log' aria-live='polite'>
-				<MessageList messages={messages} isLoading={isLoadingMessages} />
-			</div>
-
-			<div className='sticky bottom-0 bg-gray-800 border-t border-gray-700'>
-				<form onSubmit={handleSubmit} className='p-4'>
-					<div className='flex gap-2'>
-						<Input
-							value={input}
-							onChange={handleInputChange}
-							placeholder='Type your message...'
-							disabled={isLoadingMessages}
-							className='flex-1 bg-gray-700 text-white border-gray-600 placeholder-gray-400'
-							aria-label='Chat input'
-						/>
-						<Button
-							type='submit'
-							disabled={isLoadingMessages || !input.trim()}
-							className='bg-blue-600 hover:bg-blue-700 text-white'
-							aria-label='Send message'>
-							<Send className='h-4 w-4' />
-						</Button>
+			<div className='flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent'>
+				{isLoadingMessages ? (
+					<div className='text-center text-gray-300 animate-pulse font-medium'>
+						Loading conversation...
 					</div>
+				) : queryError ? (
+					<div className='text-red-400 bg-red-500/10 p-3 rounded-md border border-red-500/20'>
+						Error: {(queryError as Error).message}
+					</div>
+				) : (
+					<MessageList messages={messages} isLoading={isLoading} />
+				)}
+				{chatError && (
+					<div className='mt-4 text-red-400 bg-red-500/10 p-3 rounded-md border border-red-500/20'>
+						Chat error: {chatError.message}
+					</div>
+				)}
+			</div>
+
+			<div className='sticky bottom-0 p-4 bg-black border-t border-white/20'>
+				<form onSubmit={handleSubmit} className='flex gap-2 items-center'>
+					<Input
+						value={input}
+						onChange={handleInputChange}
+						placeholder='Type your question...'
+						disabled={isLoadingMessages || isLoading}
+						className='flex-1 bg-black border border-white/20 text-white placeholder-gray-400 rounded-md focus:ring-1 focus:ring-white/30 focus:border-white/30 shadow-sm transition-all duration-200 font-medium'
+					/>
+					<Button
+						type='submit'
+						disabled={isLoadingMessages || isLoading || !input.trim()}
+						className='bg-black hover:bg-white/10 text-white border border-white/20 rounded-md shadow-md hover:shadow-white/20 transition-all duration-300'>
+						<Send className='w-5 h-5' />
+					</Button>
 				</form>
 			</div>
 		</div>

@@ -4,19 +4,34 @@ import { auth } from '@clerk/nextjs/server';
 import { userSubscriptions } from '../postgres/schema';
 
 export const checkSubscription = async (): Promise<boolean> => {
-	const { userId } = await auth();
+	try {
+		const { userId } = await auth();
+		if (!userId) {
+			console.warn('🚫 checkSubscription: No user ID found');
+			return false;
+		}
 
-	if (!userId) throw new Error('Unauthorized');
+		const [subscription] = await db
+			.select()
+			.from(userSubscriptions)
+			.where(eq(userSubscriptions.userId, userId));
 
-	const [subscription] = await db
-		.select()
-		.from(userSubscriptions)
-		.where(eq(userSubscriptions.userId, userId));
+		if (!subscription) {
+			console.info(`ℹ️ No subscription found for user: ${userId}`);
+			return false;
+		}
 
-	if (!subscription || !subscription.stripeCurrentPeriodEnd) return false;
+		if (!subscription.stripeCurrentPeriodEnd) {
+			console.info(`ℹ️ Subscription exists but no period end date`);
+			return false;
+		}
 
-	const isActive =
-		new Date(subscription.stripeCurrentPeriodEnd).getTime() > Date.now();
+		const isActive =
+			new Date(subscription.stripeCurrentPeriodEnd).getTime() > Date.now();
 
-	return isActive;
+		return isActive;
+	} catch (error) {
+		console.error('❌ checkSubscription error:', error);
+		return false;
+	}
 };

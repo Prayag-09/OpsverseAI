@@ -15,13 +15,20 @@ export async function POST(req: Request) {
 	try {
 		const { userId } = await auth();
 		if (!userId) {
-			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+			return NextResponse.json(
+				{ error: 'Unauthorized access' },
+				{ status: 401 }
+			);
 		}
 
-		const { messages, chatId } = await req.json();
-		if (!Array.isArray(messages) || typeof chatId !== 'number') {
+		const body = await req.json();
+		const { messages, chatId } = body;
+		if (!Array.isArray(messages) || !Number.isInteger(chatId)) {
 			return NextResponse.json(
-				{ error: 'Invalid request format' },
+				{
+					error:
+						'Invalid request: messages must be an array and chatId must be an integer',
+				},
 				{ status: 400 }
 			);
 		}
@@ -29,29 +36,41 @@ export async function POST(req: Request) {
 		const [chat] = await db.select().from(chats).where(eq(chats.id, chatId));
 		if (!chat || chat.userId !== userId || !chat.fileKey) {
 			return NextResponse.json(
-				{ error: 'Chat not found or unauthorized' },
+				{ error: 'Chat not found or access denied' },
 				{ status: 404 }
 			);
 		}
 
 		const lastMessage = messages[messages.length - 1];
-		if (!lastMessage || typeof lastMessage.content !== 'string') {
+		if (
+			!lastMessage ||
+			typeof lastMessage.content !== 'string' ||
+			!lastMessage.content.trim()
+		) {
 			return NextResponse.json(
-				{ error: 'Invalid message content' },
+				{ error: 'Invalid message: content must be a non-empty string' },
 				{ status: 400 }
 			);
 		}
-
 		const context = await getMatches(lastMessage.content, chat.fileKey);
-		console.log('Retrieved context:', context); // Debug log
+		console.log('Retrieved context:', context);
 
-		const systemPrompt = `You are a helpful AI assistant designed to assist users with questions about PDFs uploaded to a chat application powered by Pinecone and Vercel. Your traits include expert knowledge, helpfulness, cleverness, and articulateness. You are friendly, kind, and inspiring, providing vivid and thoughtful responses. Use the following context from the PDF to answer the user's question. If the context is empty or doesn’t contain the answer, respond with "I'm sorry, but I don't know the answer to that question based on the provided context" and avoid inventing information.
+		const systemPrompt = `
+		You are a helpful, knowledgeable, and friendly AI assistant. Your role is to assist users with questions about the contents of a PDF they uploaded to this chat application.
+		
+		Use **only** the information from the provided CONTEXT section to answer questions. Be accurate, concise, and clear. If the answer is not found in the context, respond with:
+		"I don’t have enough information from the PDF to answer that accurately."
+		
+		Do not make assumptions or generate content beyond what is provided.
+		
+		---
+		
+		**CONTEXT START**
+		${context || 'No relevant context available'}
+		**CONTEXT END**
+		`;
 
-START CONTEXT BLOCK
-${context || 'No context available'}
-END CONTEXT BLOCK`;
-
-		const result = await streamText({
+		const result = streamText({
 			model: gemini('models/gemini-1.5-pro'),
 			system: systemPrompt,
 			messages: messages.map((msg: { role: string; content: string }) => ({
@@ -59,37 +78,44 @@ END CONTEXT BLOCK`;
 				content: msg.content,
 			})),
 			onFinish: async (event) => {
-				await db.insert(_messages).values([
-					{
-						chatId,
-						content: lastMessage.content,
-						role: 'user',
-						createdAt: new Date(),
-					},
-					{
-						chatId,
-						content: event.text,
-						role: 'assistant',
-						createdAt: new Date(),
-					},
-				]);
+				try {
+					await db.insert(_messages).values([
+						{
+							chatId,
+							content: lastMessage.content,
+							role: 'user',
+							createdAt: new Date(),
+						},
+						{
+							chatId,
+							content: event.text,
+							role: 'assistant',
+							createdAt: new Date(),
+						},
+					]);
+				} catch (dbError) {
+					console.error('Failed to save messages:', dbError);
+				}
 			},
 		});
 
 		return result.toDataStreamResponse();
 	} catch (error) {
 		console.error('Chat API error:', error);
-		if (error instanceof Error && error.message.includes('rate limit')) {
+		if (error instanceof Error) {
+			if (error.message.includes('rate limit')) {
+				return NextResponse.json(
+					{ error: 'Too many requests, please try again later' },
+					{ status: 429 }
+				);
+			}
 			return NextResponse.json(
-				{ error: 'Rate limit exceeded' },
-				{ status: 429 }
+				{ error: 'Something went wrong', details: error.message },
+				{ status: 500 }
 			);
 		}
 		return NextResponse.json(
-			{
-				error: 'Internal server error',
-				details: error instanceof Error ? error.message : String(error),
-			},
+			{ error: 'Unexpected server error' },
 			{ status: 500 }
 		);
 	}

@@ -10,7 +10,7 @@ import { db } from '@/lib/postgres/index';
 import { Chat as chats } from '@/lib/postgres/schema';
 import { eq } from 'drizzle-orm';
 
-export const dynamic = 'force-dynamic'; // ✅ Fix for Clerk + SSR
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
 	const { userId } = await auth();
@@ -40,13 +40,7 @@ export default async function Home() {
 	}
 
 	return (
-		<main className='relative w-screen min-h-screen flex flex-col items-center justify-center overflow-hidden bg-black text-center px-6'>
-			{/* Glow effects */}
-			<div className='absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,112,243,0.2)_0%,transparent_70%)] animate-pulse pointer-events-none' />
-			<div className='absolute top-0 left-0 w-40 h-40 bg-blue-500/25 rounded-full blur-3xl animate-pulse pointer-events-none' />
-			<div className='absolute bottom-0 right-0 w-72 h-72 bg-purple-500/25 rounded-full blur-3xl animate-pulse pointer-events-none' />
-
-			{/* Main content */}
+		<main className='relative w-screen min-h-screen flex flex-col items-center justify-center overflow-hidden text-center px-6'>
 			<div className='flex flex-col items-center'>
 				<div className='flex items-center gap-3'>
 					<h1 className='font-black text-5xl sm:text-6xl leading-tight drop-shadow-lg text-white'>
@@ -55,7 +49,6 @@ export default async function Home() {
 					<UserButton afterSignOutUrl='/' />
 				</div>
 
-				{/* Button section */}
 				<div className='flex gap-4 mt-4'>
 					{isAuth && firstChat && (
 						<>
@@ -71,13 +64,11 @@ export default async function Home() {
 					)}
 				</div>
 
-				{/* Info text */}
 				<h3 className='text-lg sm:text-xl font-semibold mt-6 text-gray-300 leading-relaxed max-w-xl'>
 					Join millions of students, researchers and professionals to instantly
 					answer questions and understand research with AI
 				</h3>
 
-				{/* Upload or Sign-in */}
 				<div className='mt-6 flex flex-col gap-4 w-full max-w-md'>
 					{isAuth ? (
 						<FileUploadButton />

@@ -47,7 +47,6 @@ export const getMatches = async (query: string, fileKey: string) => {
 			fileKey
 		);
 
-		// You can tweak this threshold
 		const THRESHOLD = 0.5;
 
 		const topDocs = matchedResults
