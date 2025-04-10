@@ -7,6 +7,7 @@ import { Send } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import MessageList from './MessageList';
+import { UserButton } from '@clerk/nextjs';
 
 type Message = {
 	id: string;
@@ -51,6 +52,9 @@ export default function ChatComponent({ chatId }: Props) {
 				<h3 className='text-xl font-bold tracking-tight text-white'>
 					PDF Chat
 				</h3>
+				<div className='absolute top-4 right-4'>
+					<UserButton />
+				</div>
 			</div>
 
 			<div className='flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent'>

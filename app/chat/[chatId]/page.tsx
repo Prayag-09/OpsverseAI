@@ -1,4 +1,3 @@
-// chat/[chatId]/page.tsx
 import { db } from '@/lib/postgres/index';
 import { Chat as chats } from '@/lib/postgres/schema';
 import { checkSubscription } from '@/lib/subscription/sub';
@@ -12,11 +11,28 @@ export default async function ChatPage({
 }: {
 	params: { chatId: string };
 }) {
-	if (!params?.chatId || isNaN(Number(params.chatId))) notFound();
+	if (!params?.chatId) {
+		console.error(
+			'❌ Invalid chatId: params is undefined or missing chatId',
+			params
+		);
+		notFound();
+	}
 
-	const numericChatId = parseInt(params.chatId);
+	const chatIdStr = params.chatId;
+	const numericChatId = Number(chatIdStr);
+	if (isNaN(numericChatId)) {
+		console.error('❌ ChatId is not a number:', chatIdStr);
+		notFound();
+	}
+
+	console.log('Processing chatId:', { chatIdStr, numericChatId });
+
 	const { userId } = await auth();
-	if (!userId) redirect('/sign-in');
+	if (!userId) {
+		console.error('❌ No userId found for chat:', numericChatId);
+		redirect('/sign-in');
+	}
 
 	const _chats = await db
 		.select()
@@ -24,10 +40,19 @@ export default async function ChatPage({
 		.where(eq(chats.userId, userId))
 		.orderBy(chats.createdAt);
 
-	if (!_chats || _chats.length === 0) redirect('/');
+	if (!_chats || _chats.length === 0) {
+		console.warn('⚠️ No chats found for user:', userId);
+		redirect('/');
+	}
 
 	const currentChat = _chats.find((chat) => chat.id === numericChatId);
-	if (!currentChat || !currentChat.pdfUrl) notFound();
+	if (!currentChat || !currentChat.pdfUrl) {
+		console.error(
+			'❌ Current chat not found or missing pdfUrl:',
+			numericChatId
+		);
+		notFound();
+	}
 
 	const subscriptionResult = await checkSubscription();
 	const isPro =

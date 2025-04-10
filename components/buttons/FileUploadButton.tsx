@@ -8,6 +8,7 @@ import uploadToS3, { getPublicUrl } from '@/lib/aws/s3.client';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react'; // Add this for the loading spinner
 
 interface UploadData {
 	file_key: string;
@@ -65,7 +66,7 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: async (acceptedFiles) => {
-			if (disabled) return; // Prevent upload if disabled
+			if (disabled) return;
 			const file = acceptedFiles[0];
 			if (!file) return;
 
@@ -74,13 +75,14 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({
 				setError(null);
 				setUploadedUrl(null);
 
+				// Upload to S3
 				const uploadData = await uploadToS3(file);
 				if (!uploadData?.file_key || !uploadData?.fileName) {
 					throw new Error('Invalid upload response from S3');
 				}
 
 				console.log('Uploading to S3 successful, data:', uploadData);
-				createChat(uploadData);
+				createChat(uploadData); // Trigger chat creation mutation
 
 				const url = getPublicUrl(uploadData.file_key);
 				setUploadedUrl(url);
@@ -115,26 +117,30 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({
 			toast.error(errorMessage);
 			setError(errorMessage);
 		},
-		disabled, // Pass disabled state to dropzone
+		disabled,
 	});
 
 	return (
 		<div className='flex flex-col items-center justify-center w-full max-w-md mt-8 gap-4'>
 			<div
 				{...getRootProps()}
-				className={`flex flex-col items-center justify-center w-full h-52 p-5 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200
+				className={`flex flex-col items-center justify-center w-full h-52 p-5 rounded-xl border-2 border-dashed transition-all duration-200
           ${
 						uploading
-							? 'border-blue-500/50 bg-blue-500/10 animate-pulse'
+							? 'border-blue-500/50 bg-blue-500/10 animate-pulse cursor-wait'
 							: disabled
 							? 'border-gray-500/30 bg-gray-800/10 cursor-not-allowed opacity-50'
 							: 'bg-gray-800/20 border-gray-600/50 hover:border-gray-400/40'
 					}`}>
-				<input {...getInputProps()} disabled={disabled} />
-				<Upload className='h-8 w-8 text-gray-400 mb-2' />
+				<input {...getInputProps()} disabled={disabled || uploading} />
+				{uploading ? (
+					<Loader2 className='h-8 w-8 text-blue-400 animate-spin mb-2' />
+				) : (
+					<Upload className='h-8 w-8 text-gray-400 mb-2' />
+				)}
 				<p className='text-sm sm:text-base text-gray-300 text-center'>
 					{uploading
-						? 'Uploading...'
+						? 'Processing upload... Please wait'
 						: isDragActive
 						? 'Drop PDF here'
 						: disabled
