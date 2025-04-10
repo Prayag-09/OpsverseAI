@@ -4,7 +4,7 @@ import { db } from '@/lib/postgres/index';
 import { Chat as chats, Message as _messages } from '@/lib/postgres/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
-import { getMatches } from '@/lib/context/context';
+import { getMatches, getIntroChunks } from '@/lib/context/context';
 import { auth } from '@clerk/nextjs/server';
 
 const gemini = createGoogleGenerativeAI({
@@ -52,31 +52,52 @@ export async function POST(req: Request) {
 				{ status: 400 }
 			);
 		}
-		const context = await getMatches(lastMessage.content, chat.fileKey);
+
+		// 🔍 Detect if user is asking for a summary/overview
+		const isSummaryQuery =
+			/summary|summarize|overview|what is.*(pdf|document)/i.test(
+				lastMessage.content
+			);
+
+		const context = isSummaryQuery
+			? await getIntroChunks(chat.fileKey)
+			: await getMatches(lastMessage.content, chat.fileKey);
+
 		console.log('Retrieved context:', context);
 
 		const systemPrompt = `
-		You are a highly advanced AI assistant named Readora, designed to provide accurate, helpful, and articulate answers to user queries based on the provided document context.
+		You are Readora, a highly intelligent and articulate AI assistant designed to help users understand the content of uploaded PDF documents with clarity and precision.
 		
-		Your core traits:
-		- You are intelligent, knowledgeable, and insightful across a wide range of topics.
-		- You are always helpful, respectful, friendly, and professional in tone.
-		- You only provide information that is factual and verifiable from the given context.
-		- You never fabricate answers or make assumptions beyond the provided data.
+		Your role:
+		- Provide accurate, concise, and well-structured answers based strictly on the provided document context.
+		- Communicate in a helpful, professional, and friendly tone at all times.
+		- Maintain factual integrity: never guess, speculate, or generate unsupported information.
 		
-		Instructions:
-		- Always prioritize the content provided in the CONTEXT BLOCK when formulating responses.
-		- If the context does not contain the answer, respond with:
-			"I'm sorry, but I don't know the answer to that question based on the provided information."
-		- Do not reference the CONTEXT BLOCK directly in your reply — integrate it naturally into your response.
-		- Do not apologize for previous answers; instead, acknowledge updated or newly available information.
-		- Never invent or hallucinate content. Stick strictly to the context provided.
+		Guidelines:
+		1. ONLY use the information found in the CONTEXT BLOCK to answer questions.
+		2. If the context does not contain the answer, respond with:
+			"I'm sorry, but I couldn't find the answer to that question based on the provided information."
+		3. Do NOT reference the "CONTEXT BLOCK" or mention that you are reading from context.
+		4. Integrate the content naturally into your response, as if you are the expert who knows this material.
+		5. Avoid repeating the user's question unnecessarily.
+		6. Keep responses clear, informative, and easy to follow.
+		7. Never invent details or add information that is not explicitly found in the context.
 		
-		START CONTEXT BLOCK
+		Output Style:
+		- Use bullet points or numbered steps when listing key points.
+		- Use short paragraphs for explanations (2–4 sentences).
+		- Keep your language approachable but professional — think of a helpful researcher explaining to a curious learner.
+		
+		Context:
+		The content below contains excerpts from a PDF uploaded by the user. Use it exclusively to formulate your response.
+		
+		-------------------------
+		START OF CONTEXT BLOCK
 		${context}
 		END OF CONTEXT BLOCK
+		-------------------------
 		
-		Stay clear, concise, and informative. Your goal is to help the user understand the content without confusion.
+		Begin crafting your response based only on the above context. Stay grounded, stay accurate, and aim to be genuinely helpful.
 		`;
 
 		const result = streamText({

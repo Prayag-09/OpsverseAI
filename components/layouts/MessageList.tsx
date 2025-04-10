@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { Message } from '@ai-sdk/react';
 import { Loader2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 type Props = {
 	isLoading: boolean;
@@ -35,7 +36,17 @@ const MessageList = ({ messages, isLoading }: Props) => {
 								'bg-black text-gray-300': message.role === 'assistant',
 							}
 						)}>
-						<p className='text-sm whitespace-pre-wrap'>{message.content}</p>
+						<ReactMarkdown
+							components={{
+								p: ({ node, ...props }) => (
+									<p
+										{...props}
+										className='prose prose-invert text-sm max-w-none whitespace-pre-wrap'
+									/>
+								),
+							}}>
+							{message.content}
+						</ReactMarkdown>
 					</div>
 				</div>
 			))}

@@ -35,9 +35,7 @@ export const getMatchesFromEmbeddings = async (
 	}
 };
 
-/**
- * Returns a formatted context string based on a user's question and matching embeddings from Pinecone.
- */
+// Returns a formatted context string based on a user's question and matching embeddings from Pinecone.
 export const getMatches = async (query: string, fileKey: string) => {
 	try {
 		const queryEmbedding = await getEmbedding(query);
@@ -62,5 +60,34 @@ export const getMatches = async (query: string, fileKey: string) => {
 	} catch (error) {
 		console.error('❌ Error fetching matches:', error);
 		return 'Context retrieval failed. Please try again.';
+	}
+};
+
+export const getIntroChunks = async (fileKey: string) => {
+	try {
+		const summaryEmbedding = await getEmbedding('summary of the document');
+
+		const introChunks = await getMatchesFromEmbeddings(
+			summaryEmbedding,
+			fileKey
+		);
+
+		const topChunks = introChunks
+			.sort(
+				(a, b) =>
+					(Number(a.metadata?.pageNumber) || 0) -
+					(Number(b.metadata?.pageNumber) || 0)
+			)
+			.slice(0, 5)
+			.map((match) => (match.metadata as { text: string }).text);
+
+		if (topChunks.length === 0) {
+			return 'No introductory content found.';
+		}
+
+		return topChunks.join('\n\n').slice(0, 3000);
+	} catch (error) {
+		console.error('🚨 Error fetching intro chunks:', error);
+		return 'Context retrieval failed.';
 	}
 };
