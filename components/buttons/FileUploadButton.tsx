@@ -14,30 +14,50 @@ interface UploadData {
 	fileName: string;
 }
 
-const FileUploadButton: React.FC = () => {
+interface ChatResponse {
+	id: string;
+}
+
+interface FileUploadButtonProps {
+	disabled?: boolean;
+}
+
+const FileUploadButton: React.FC<FileUploadButtonProps> = ({
+	disabled = false,
+}) => {
 	const [uploading, setUploading] = useState(false);
 	const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
 	const router = useRouter();
-	const { mutate: createChat } = useMutation({
+
+	const { mutate: createChat, error: mutationError } = useMutation<
+		ChatResponse,
+		Error,
+		UploadData
+	>({
 		mutationFn: async (data: UploadData) => {
-			const response = await axios.post('/api/create-chat', data);
-			if (response.status !== 200) {
-				throw new Error(response.data?.message || 'Failed to create chat');
+			const response = await axios.post('/api/create-chat', data, {
+				headers: { 'Content-Type': 'application/json' },
+			});
+			if (response.status !== 201) {
+				throw new Error(response.data?.error || 'Failed to create chat');
+			}
+			if (!response.data?.id) {
+				throw new Error('Invalid response: id is missing');
 			}
 			return response.data;
 		},
 		onSuccess: (data) => {
 			toast.success('Chat created successfully!');
-			router.push(`/chat/${data.chat_id}`);
+			router.push(`/chat/${data.id}`);
 		},
-		onError: (error: any) => {
+		onError: (error: Error) => {
 			console.error('Chat creation failed:', error);
 			const message =
-				error.response?.data?.message ||
 				error.message ||
-				'Failed to create chat';
+				mutationError?.message ||
+				'Failed to create chat due to an unknown error';
 			toast.error(message);
 			setError(message);
 		},
@@ -45,25 +65,30 @@ const FileUploadButton: React.FC = () => {
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: async (acceptedFiles) => {
+			if (disabled) return; // Prevent upload if disabled
 			const file = acceptedFiles[0];
 			if (!file) return;
 
 			try {
 				setUploading(true);
 				setError(null);
+				setUploadedUrl(null);
 
 				const uploadData = await uploadToS3(file);
 				if (!uploadData?.file_key || !uploadData?.fileName) {
-					throw new Error('Invalid upload response');
+					throw new Error('Invalid upload response from S3');
 				}
+
+				console.log('Uploading to S3 successful, data:', uploadData);
 				createChat(uploadData);
+
 				const url = getPublicUrl(uploadData.file_key);
 				setUploadedUrl(url);
-
 				toast.success('File uploaded successfully!');
 			} catch (err) {
-				console.error('Upload failed:', err);
-				const message = err instanceof Error ? err.message : 'Upload failed';
+				console.error('Upload or chat creation failed:', err);
+				const message =
+					err instanceof Error ? err.message : 'Upload or chat creation failed';
 				toast.error(message);
 				setError(message);
 			} finally {
@@ -74,7 +99,7 @@ const FileUploadButton: React.FC = () => {
 			'application/pdf': ['.pdf'],
 		},
 		maxFiles: 1,
-		maxSize: 10 * 1024 * 1024,
+		maxSize: 10 * 1024 * 1024, // 10MB
 		onDropRejected: (rejectedFiles) => {
 			const firstFile = rejectedFiles[0];
 			let errorMessage = 'File must be a PDF and under 10MB';
@@ -90,6 +115,7 @@ const FileUploadButton: React.FC = () => {
 			toast.error(errorMessage);
 			setError(errorMessage);
 		},
+		disabled, // Pass disabled state to dropzone
 	});
 
 	return (
@@ -97,18 +123,22 @@ const FileUploadButton: React.FC = () => {
 			<div
 				{...getRootProps()}
 				className={`flex flex-col items-center justify-center w-full h-52 p-5 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200
-        ${
-					uploading
-						? 'border-blue-500/50 bg-blue-500/10 animate-pulse'
-						: 'bg-gray-800/20 border-gray-600/50 hover:border-gray-400/40'
-				}`}>
-				<input {...getInputProps()} />
+          ${
+						uploading
+							? 'border-blue-500/50 bg-blue-500/10 animate-pulse'
+							: disabled
+							? 'border-gray-500/30 bg-gray-800/10 cursor-not-allowed opacity-50'
+							: 'bg-gray-800/20 border-gray-600/50 hover:border-gray-400/40'
+					}`}>
+				<input {...getInputProps()} disabled={disabled} />
 				<Upload className='h-8 w-8 text-gray-400 mb-2' />
 				<p className='text-sm sm:text-base text-gray-300 text-center'>
 					{uploading
 						? 'Uploading...'
 						: isDragActive
 						? 'Drop PDF here'
+						: disabled
+						? 'Upload disabled (Upgrade to Pro)'
 						: 'Drag and drop a PDF or click to upload'}
 				</p>
 				<p className='text-xs text-gray-500 mt-1'>Max size: 10MB (PDF only)</p>

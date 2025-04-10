@@ -59,17 +59,21 @@ export default async function Home() {
 
 				{/* Authenticated buttons */}
 				<div className='flex flex-col sm:flex-row gap-4 mt-6 w-full sm:w-auto justify-center items-center'>
-					{isAuth && firstChat && (
+					{isAuth && (
 						<>
-							<Link href={`/chat/${firstChat.id}`} className='w-full sm:w-auto'>
-								<Button
-									size='lg'
-									className='w-full sm:w-auto bg-indigo-600/20 hover:bg-indigo-600/40 backdrop-blur-md border border-indigo-500/50 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-200'>
-									Go to Chats <ArrowRight className='ml-2 w-4 h-4' />
-								</Button>
-							</Link>
+							{firstChat && (
+								<Link
+									href={`/chat/${firstChat.id}`}
+									className='w-full sm:w-auto'>
+									<Button
+										size='lg'
+										className='w-full sm:w-auto bg-indigo-600/20 hover:bg-indigo-600/40 backdrop-blur-md border border-indigo-500/50 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-200'>
+										Go to Chats <ArrowRight className='ml-2 w-4 h-4' />
+									</Button>
+								</Link>
+							)}
 							<div className='w-full sm:w-auto'>
-								<SubscriptionButton isPro={isPro} />
+								<SubscriptionButton initialIsPro={isPro} />
 							</div>
 						</>
 					)}
@@ -78,7 +82,7 @@ export default async function Home() {
 				{/* Upload or Login */}
 				<div className='mt-8 flex flex-col gap-4 w-full max-w-md'>
 					{isAuth ? (
-						<FileUploadButton />
+						<FileUploadButton disabled={!isPro} />
 					) : (
 						<Link href='/sign-in'>
 							<Button
@@ -88,6 +92,11 @@ export default async function Home() {
 								<LogIn className='w-4 h-4 ml-2' />
 							</Button>
 						</Link>
+					)}
+					{!isPro && isAuth && (
+						<p className='text-sm text-yellow-400 text-center'>
+							Upload is disabled. Upgrade to Pro to unlock this feature!
+						</p>
 					)}
 				</div>
 			</div>

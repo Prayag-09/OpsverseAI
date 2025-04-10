@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
 			// Validate required fields
 			if (!userId || !subscriptionId) {
-				console.error('❌ Missing userId or subscription ID');
+				console.error('❌ Missing userId or subscription ID', { session });
 				return new NextResponse('Missing required fields', { status: 400 });
 			}
 
@@ -44,10 +44,22 @@ export async function POST(req: Request) {
 			const subscription = subscriptionResponse as Stripe.Subscription;
 
 			// Access current_period_end safely
-			const periodEnd = subscription.items.data[0].current_period_end;
+			const periodEnd = subscription.items.data[0]?.current_period_end;
 			if (!periodEnd || typeof periodEnd !== 'number') {
-				console.error('❌ Invalid current_period_end:', periodEnd);
+				console.error('❌ Invalid current_period_end:', {
+					periodEnd,
+					subscription,
+				});
 				return new NextResponse('Invalid subscription', { status: 500 });
+			}
+
+			// Validate customer exists
+			const customer = await stripe.customers.retrieve(
+				subscription.customer as string
+			);
+			if (customer.deleted) {
+				console.error('❌ Customer deleted in Stripe:', subscription.customer);
+				return new NextResponse('Customer deleted', { status: 400 });
 			}
 
 			// Insert or update subscription in database
@@ -69,6 +81,11 @@ export async function POST(req: Request) {
 						stripeCurrentPeriodEnd: new Date(periodEnd * 1000),
 					},
 				});
+
+			console.log('✅ Subscription created/updated:', {
+				userId,
+				subscriptionId,
+			});
 		} catch (err) {
 			console.error('❌ Subscription creation error:', err);
 			return new NextResponse('Subscription error', { status: 500 });
@@ -83,7 +100,7 @@ export async function POST(req: Request) {
 
 			// Validate subscription ID
 			if (!subscriptionId) {
-				console.warn('⚠️ No subscription ID in invoice');
+				console.warn('⚠️ No subscription ID in invoice', { invoice });
 				return new NextResponse('Missing subscription ID', { status: 400 });
 			}
 
@@ -94,9 +111,12 @@ export async function POST(req: Request) {
 			const subscription = subscriptionResponse as Stripe.Subscription;
 
 			// Access current_period_end safely
-			const periodEnd = subscription.items.data[0].current_period_end;
+			const periodEnd = subscription.items.data[0]?.current_period_end;
 			if (!periodEnd || typeof periodEnd !== 'number') {
-				console.error('❌ Invalid current_period_end:', periodEnd);
+				console.error('❌ Invalid current_period_end:', {
+					periodEnd,
+					subscription,
+				});
 				return new NextResponse('Invalid subscription', { status: 500 });
 			}
 
@@ -108,9 +128,28 @@ export async function POST(req: Request) {
 					stripeCurrentPeriodEnd: new Date(periodEnd * 1000),
 				})
 				.where(eq(userSubscriptions.stripeSubscriptionId, subscription.id));
+
+			console.log('✅ Subscription updated for payment:', { subscriptionId });
 		} catch (err) {
 			console.error('❌ Subscription update error:', err);
 			return new NextResponse('Update error', { status: 500 });
+		}
+	}
+
+	// Handle customer.subscription.deleted (optional)
+	if (event.type === 'customer.subscription.deleted') {
+		try {
+			const subscription = event.data.object as Stripe.Subscription;
+			const subscriptionId = subscription.id;
+
+			await db
+				.delete(userSubscriptions)
+				.where(eq(userSubscriptions.stripeSubscriptionId, subscriptionId));
+
+			console.log('✅ Subscription deleted from database:', { subscriptionId });
+		} catch (err) {
+			console.error('❌ Subscription deletion error:', err);
+			return new NextResponse('Deletion error', { status: 500 });
 		}
 	}
 
