@@ -105,7 +105,7 @@ export const GET = async (req: Request) => {
 
 			console.log('✅ Stripe Checkout Session created:', checkoutSession.id, {
 				metadata: checkoutSession.metadata,
-			}); // Log metadata to verify
+			});
 			return NextResponse.json({ url: checkoutSession.url });
 		} else {
 			console.warn(

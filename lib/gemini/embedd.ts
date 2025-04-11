@@ -14,7 +14,7 @@ export const getEmbedding = async (text: string): Promise<number[]> => {
 			throw new Error('Input text is empty or undefined');
 		}
 
-		const model = genAI.getGenerativeModel({ model: 'text-embedding-004' }); // Or 'gemini-embedding-exp-03-07'
+		const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
 		const result = await model.embedContent(text.replace(/\n/g, ' ').trim());
 
 		const embedding = result.embedding.values;

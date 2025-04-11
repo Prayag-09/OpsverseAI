@@ -11,7 +11,7 @@ const PDFViewer = ({ pdf_url }: Props) => {
 	useEffect(() => {
 		setIsLoading(true);
 		setError(null);
-		const timer = setTimeout(() => setIsLoading(false), 1000); // Simulate load
+		const timer = setTimeout(() => setIsLoading(false), 1000);
 		return () => clearTimeout(timer);
 	}, [pdf_url]);
 

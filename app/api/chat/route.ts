@@ -53,7 +53,6 @@ export async function POST(req: Request) {
 			);
 		}
 
-		// 🔍 Detect if user is asking for a summary/overview
 		const isSummaryQuery =
 			/summary|summarize|overview|what is.*(pdf|document)/i.test(
 				lastMessage.content

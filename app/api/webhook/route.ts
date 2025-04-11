@@ -11,8 +11,6 @@ export async function POST(req: Request) {
 	const signature = (await headers()).get('Stripe-Signature') as string;
 
 	let event: Stripe.Event;
-
-	// Verify webhook signature
 	try {
 		event = stripe.webhooks.constructEvent(
 			body,
@@ -24,26 +22,22 @@ export async function POST(req: Request) {
 		return new NextResponse('Webhook Error', { status: 400 });
 	}
 
-	// Handle checkout.session.completed event
 	if (event.type === 'checkout.session.completed') {
 		try {
 			const session = event.data.object as Stripe.Checkout.Session;
 			const userId = session.metadata?.userId;
 			const subscriptionId = session.subscription as string;
 
-			// Validate required fields
 			if (!userId || !subscriptionId) {
 				console.error('❌ Missing userId or subscription ID', { session });
 				return new NextResponse('Missing required fields', { status: 400 });
 			}
 
-			// Retrieve subscription from Stripe
 			const subscriptionResponse = await stripe.subscriptions.retrieve(
 				subscriptionId
 			);
 			const subscription = subscriptionResponse as Stripe.Subscription;
 
-			// Access current_period_end safely
 			const periodEnd = subscription.items.data[0]?.current_period_end;
 			if (!periodEnd || typeof periodEnd !== 'number') {
 				console.error('❌ Invalid current_period_end:', {
@@ -53,7 +47,6 @@ export async function POST(req: Request) {
 				return new NextResponse('Invalid subscription', { status: 500 });
 			}
 
-			// Validate customer exists
 			const customer = await stripe.customers.retrieve(
 				subscription.customer as string
 			);
@@ -62,7 +55,6 @@ export async function POST(req: Request) {
 				return new NextResponse('Customer deleted', { status: 400 });
 			}
 
-			// Insert or update subscription in database
 			await db
 				.insert(userSubscriptions)
 				.values({
@@ -92,25 +84,22 @@ export async function POST(req: Request) {
 		}
 	}
 
-	// Handle invoice.payment_succeeded event
 	if (event.type === 'invoice.payment_succeeded') {
 		try {
 			const invoice: any = event.data.object as Stripe.Invoice;
 			const subscriptionId = invoice.subscription as string;
 
-			// Validate subscription ID
 			if (!subscriptionId) {
 				console.warn('⚠️ No subscription ID in invoice', { invoice });
 				return new NextResponse('Missing subscription ID', { status: 400 });
 			}
 
-			// Retrieve subscription from Stripe
+
 			const subscriptionResponse = await stripe.subscriptions.retrieve(
 				subscriptionId
 			);
 			const subscription = subscriptionResponse as Stripe.Subscription;
 
-			// Access current_period_end safely
 			const periodEnd = subscription.items.data[0]?.current_period_end;
 			if (!periodEnd || typeof periodEnd !== 'number') {
 				console.error('❌ Invalid current_period_end:', {
@@ -120,7 +109,6 @@ export async function POST(req: Request) {
 				return new NextResponse('Invalid subscription', { status: 500 });
 			}
 
-			// Update subscription in database
 			await db
 				.update(userSubscriptions)
 				.set({
@@ -136,7 +124,6 @@ export async function POST(req: Request) {
 		}
 	}
 
-	// Handle customer.subscription.deleted (optional)
 	if (event.type === 'customer.subscription.deleted') {
 		try {
 			const subscription = event.data.object as Stripe.Subscription;

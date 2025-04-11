@@ -25,7 +25,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
 
 	const handleNewChat = () => {
 		setLoading(true);
-		setTimeout(() => setLoading(false), 1000); // Replace with actual logic
+		setTimeout(() => setLoading(false), 1000);
 	};
 
 	const toggleSidebar = () => setIsCollapsed(!isCollapsed);

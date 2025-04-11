@@ -82,7 +82,7 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({
 				}
 
 				console.log('Uploading to S3 successful, data:', uploadData);
-				createChat(uploadData); // Trigger chat creation mutation
+				createChat(uploadData);
 
 				const url = getPublicUrl(uploadData.file_key);
 				setUploadedUrl(url);

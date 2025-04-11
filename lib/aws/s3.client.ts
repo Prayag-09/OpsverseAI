@@ -28,7 +28,6 @@ const uploadToS3 = async (file: File): Promise<UploadResponse> => {
 			Date.now().toString() +
 			file.name.replace(/\s+/g, '-').toLowerCase();
 
-		// Error : Convert File to Buffer instead of using stream
 		const fileBuffer = Buffer.from(await file.arrayBuffer());
 
 		const params = {

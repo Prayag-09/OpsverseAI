@@ -7,9 +7,7 @@ type Metadata = {
 	pageNumber: number;
 };
 
-/**
- * Queries Pinecone using the embedding vector and returns the closest matches.
- */
+
 export const getMatchesFromEmbeddings = async (
 	embedding: number[],
 	fileKey: string
@@ -35,7 +33,6 @@ export const getMatchesFromEmbeddings = async (
 	}
 };
 
-// Returns a formatted context string based on a user's question and matching embeddings from Pinecone.
 export const getMatches = async (query: string, fileKey: string) => {
 	try {
 		const queryEmbedding = await getEmbedding(query);
@@ -56,7 +53,7 @@ export const getMatches = async (query: string, fileKey: string) => {
 			return 'No relevant context found for this query.';
 		}
 
-		return topDocs.join('\n').slice(0, 3000); // limit to ~5 vectors or ~3k characters
+		return topDocs.join('\n').slice(0, 3000);
 	} catch (error) {
 		console.error('❌ Error fetching matches:', error);
 		return 'Context retrieval failed. Please try again.';

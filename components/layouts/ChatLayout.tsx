@@ -1,4 +1,3 @@
-// components/layouts/ChatLayout.tsx
 'use client';
 
 import { useState } from 'react';
@@ -32,12 +31,11 @@ export default function ChatLayout({
 	const [isSheetOpen, setIsSheetOpen] = useState(false);
 
 	const handleSheetClose = () => {
-		setIsSheetOpen(false); // Explicitly close the sheet
+		setIsSheetOpen(false);
 	};
 
 	return (
 		<div className='flex flex-col h-screen w-full bg-black text-white overflow-hidden'>
-			{/* Mobile Top Bar */}
 			<header className='md:hidden p-4 border-b border-white/10 flex items-center justify-between bg-black/80 backdrop-blur-md z-50'>
 				<Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
 					<SheetTrigger asChild>
@@ -53,10 +51,8 @@ export default function ChatLayout({
 						onInteractOutside={handleSheetClose}
 						onEscapeKeyDown={handleSheetClose}>
 						<h2 className='sr-only'>Chat Navigation</h2>{' '}
-						{/* Accessibility title */}
 						<ChatSideBar chats={chats} chatId={chatId} isPro={isPro} />
 						<SheetClose className='hidden' />{' '}
-						{/* Hidden close button to ensure programmatic closing */}
 					</SheetContent>
 				</Sheet>
 				<h1 className='text-base font-semibold truncate'>
@@ -64,21 +60,16 @@ export default function ChatLayout({
 				</h1>
 			</header>
 
-			{/* Main Layout */}
 			<div className='flex flex-1 overflow-hidden z-40'>
-				{/* Desktop Sidebar */}
 				<aside className='hidden md:block h-screen border-r border-white/10'>
 					<ChatSideBar chats={chats} chatId={chatId} isPro={isPro} />
 				</aside>
 
-				{/* Main Content */}
 				<main className='flex flex-1 flex-col md:flex-row overflow-hidden'>
-					{/* PDF Section */}
 					<section className='flex-1 md:flex-[5] p-4 md:p-6 overflow-hidden border-b md:border-b-0 md:border-r border-white/10'>
 						<PDFViewer pdf_url={currentChatPdfUrl} />
 					</section>
 
-					{/* Chat Section */}
 					<aside className='flex-1 md:flex-[3] border-t md:border-t-0 md:border-l border-white/10'>
 						<ChatComponent chatId={chatId} />
 					</aside>
