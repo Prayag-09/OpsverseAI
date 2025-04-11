@@ -42,7 +42,7 @@ export default async function Home() {
 				mostRecentChat = latestInteraction[0];
 			}
 		} catch (error) {
-			console.error('Error fetching user data:', error);
+			console.error('Error retrieving user data:', error);
 		}
 	}
 
@@ -52,29 +52,28 @@ export default async function Home() {
 				<UserButton />
 			</div>
 
-			<section className='flex flex-col items-center max-w-4xl z-10 space-y-8'>
-				<h1 className='font-black text-5xl sm:text-6xl leading-tight text-white drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]'>
-					TL;DR? Chat. With. Your. PDFs 📄💬
+			<section className='flex flex-col items-center max-w-4xl z-10 space-y-10'>
+				<h1 className='font-black text-5xl sm:text-6xl leading-tight text-white drop-shadow-[0_0_8px_rgba(99,102,241,0.3)]'>
+					TL;DR? Chat With Your PDF 📄💬
 				</h1>
 
-				<p className='text-lg sm:text-xl font-medium mt-4 text-gray-300 leading-relaxed max-w-2xl'>
-					Ditch the scrolling. Upload any PDF — textbook, report, thesis, chaos
-					— and just <em>ask</em> stuff. OpsverseAI turns boring docs into
-					convos that actually make sense.
+				<p className='text-lg sm:text-xl font-medium text-gray-300 leading-relaxed max-w-2xl'>
+					Upload any PDF—textbooks, reports, or research documents—and ask
+					questions effortlessly. OpsVerseAI delivers precise, document-based
+					responses.
 				</p>
 
-				<div className='flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center items-center animate-slide-up'>
+				<div className='flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center items-center'>
 					{isAuthenticated && (
 						<>
 							{mostRecentChat && (
 								<Link
 									href={`/chat/${mostRecentChat.id}`}
-									className='w-full sm:w-auto group'>
+									className='w-full sm:w-auto'>
 									<Button
 										size='lg'
-										className='w-full sm:w-auto bg-indigo-600/30 hover:bg-indigo-600/50 backdrop-blur-md border border-indigo-500/60 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300 group-hover:scale-105'>
-										<ArrowRight className='mr-2 w-4 h-4 group-hover:animate-bounce-right' />
-										Back to Your Last Chat!
+										className='w-full sm:w-auto bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/50 text-white font-semibold rounded-lg shadow-md hover:shadow-indigo-500/30 transition-all duration-200'>
+										<ArrowRight className='mr-2 w-4 h-4' /> Resume Last Session
 									</Button>
 								</Link>
 							)}
@@ -90,9 +89,8 @@ export default async function Home() {
 						<Link href='/sign-in'>
 							<Button
 								size='xl'
-								className='w-full bg-gradient-to-r from-purple-500/30 to-indigo-500/30 hover:from-purple-600/40 hover:to-indigo-600/40 backdrop-blur-md border border-purple-500/60 text-white font-bold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-600/50 transition-all duration-300 hover:scale-105'>
-								<LogIn className='mr-2 w-5 h-5 animate-spin-once' />
-								Jump In — Free Fun Awaits!
+								className='w-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 hover:from-purple-600/30 hover:to-indigo-600/30 border border-purple-500/40 text-white font-bold rounded-lg shadow-md hover:shadow-purple-500/30 transition-all duration-200'>
+								<LogIn className='mr-2 w-5 h-5' /> Get Started
 							</Button>
 						</Link>
 					) : (
@@ -100,58 +98,58 @@ export default async function Home() {
 					)}
 
 					{isAuthenticated && !isPremiumUser && (
-						<div className='text-sm text-yellow-300 flex flex-col items-center justify-center gap-3 animate-pulse-slow'>
+						<div className='text-sm text-yellow-300 flex flex-col items-center justify-center gap-3'>
 							<div className='flex items-center gap-2'>
-								<Sparkles className='w-4 h-4 text-yellow-400 animate-bounce-slow' />
+								<Sparkles className='w-4 h-4 text-yellow-400' />
 								<span className='font-medium'>
-									Upgrade to{' '}
-									<span className='font-bold text-yellow-200'>Premium</span> to
-									unlock full access!
+									Enhance your experience with{' '}
+									<span className='font-bold text-yellow-200'>Premium</span>.
 								</span>
 							</div>
-							<div className='w-full max-w-md bg-gradient-to-br from-yellow-900/40 to-yellow-800/20 border border-yellow-500/40 rounded-xl p-4 text-center shadow-md hover:shadow-yellow-500/30 transition-all duration-300'>
+							<div className='w-full max-w-md bg-gradient-to-br from-yellow-900/20 to-yellow-800/10 border border-yellow-500/40 rounded-lg p-4 text-center shadow-md'>
 								<p className='mb-2 text-yellow-200 font-medium'>
-									Just testing? Use the Stripe test card below to explore
-									Premium features:
+									For testing, use this Stripe test card to access Premium
+									features:
 								</p>
 								<strong className='text-base text-yellow-100 tracking-wide'>
 									4242 4242 4242 4242
 								</strong>
 								<p className='text-xs text-yellow-300 mt-1'>
-									Use any future expiry, any CVC, and any ZIP code.
+									Valid with any future expiry date, CVC, and ZIP code.
 								</p>
+								<span className='text-xs text-yellow-400 mt-2 block'>
+									Note: Refresh the page after payment to update your status.
+								</span>
 							</div>
 						</div>
 					)}
 				</div>
 
-				<div className='mt-12 text-gray-300 text-sm max-w-xl bg-gray-800/50 p-6 rounded-xl border border-gray-700 shadow-md animate-fade-in-delay'>
+				<div className='mt-12 text-gray-300 text-sm max-w-xl bg-gray-800/30 p-6 rounded-lg border border-gray-700 shadow-md'>
 					<h2 className='flex items-center justify-center gap-2 text-lg font-semibold text-indigo-300 mb-4'>
-						<Lightbulb className='w-5 h-5 text-yellow-400 animate-pulse' />
-						How It Works
+						<Lightbulb className='w-5 h-5 text-yellow-400' /> How It Works
 					</h2>
 					<ul className='list-disc list-inside text-left space-y-3 text-sm sm:text-base'>
 						<li className='flex items-center gap-2'>
 							<FileText className='w-4 h-4 text-green-400' />
-							Upload any PDF — textbooks, reports, or even chaos. We don’t
-							judge.
+							Upload any PDF document for analysis.
 						</li>
 						<li className='flex items-center gap-2'>
-							<Zap className='w-4 h-4 text-indigo-400 animate-pulse' />
-							Ask anything: “Summarize this”, “Explain that diagram”, or get
-							insights fast.
+							<Zap className='w-4 h-4 text-indigo-400' />
+							Pose questions or request summaries with natural language.
 						</li>
 						<li className='flex items-center gap-2'>
-							<Lightbulb className='w-4 h-4 text-yellow-400' />
-							Like magic, get intelligent, concise answers straight from your
-							PDF.
+							<Lightbulb className='w-5 h-5 text-yellow-400' />
+							Receive accurate, context-aware responses directly from your file.
 						</li>
 					</ul>
 				</div>
 
-				<div className='mt-8 text-gray-400 text-sm flex items-center gap-2 animate-bounce-slow'>
-					<Sparkles className='w-4 h-4 text-indigo-400' />
-					Excited to try? Upload a file or unlock even more with Premium!
+				<div className='mt-8 text-gray-400 text-sm'>
+					<span className='flex items-center gap-2'>
+						<Sparkles className='w-4 h-4 text-indigo-400' />
+						Ready to begin? Upload a document or upgrade to Premium for more.
+					</span>
 				</div>
 			</section>
 		</main>
