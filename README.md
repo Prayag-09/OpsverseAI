@@ -1,11 +1,11 @@
 # ⚡️ OpsVerseAI — Intelligent PDF Chat Revolution
 
 <p align="center">
-  <img src="./images/HomePage.png" alt="OpsVerseAI Banner" />
+  <img src="./public/images/HomePage.png" alt="OpsVerseAI Banner" />
 </p>
 <p align="center"><em>Transform static PDFs into dynamic, AI-powered conversations. Upload, ask, and unlock insights effortlessly.</em></p>
 
-
+<a id="quick-overview"></a>
 ## 🌟 Quick Overview
 
 OpsVerseAI is an innovative Next.js-based application that redefines document interaction. Upload any PDF—be it textbooks, research papers, or reports—and engage in natural, context-aware conversations powered by advanced AI (Gemini API) and vector search (Pinecone). With secure authentication (Clerk), premium subscriptions (Stripe), and a responsive UI (Tailwind CSS), it’s built for efficiency and scalability.
@@ -26,13 +26,13 @@ OpsVerseAI is an innovative Next.js-based application that redefines document in
 - [🛠 Tech Stack](#tech-stack)
 - [📦 Installation](#installation)
 - [🎮 Usage](#usage)
+- [⚙️ Configuration](#configuration)
 - [🤝 Contributing](#contributing)
 - [📬 Contact](#contact)
 - [📊 Screenshots](#screenshots)
-- [🔗 Additional Resources](#additional-resources)
-
 ---
 
+<a id="features"></a>
 ## 🚀 Features
 
 - **AI-Powered PDF Chat**: Upload PDFs and query with natural language (e.g., “Summarize Chapter 3” or “Explain Figure 2”).
@@ -45,7 +45,7 @@ OpsVerseAI is an innovative Next.js-based application that redefines document in
 - **Error Resilience**: Advanced handling for subscription and API edge cases.
 
 ---
-
+<a id="tech-stack"></a>
 ## 🛠 Tech Stack
 
 | **Category**       | **Technologies**                           |
@@ -58,7 +58,7 @@ OpsVerseAI is an innovative Next.js-based application that redefines document in
 | **Language**       | TypeScript                                 |
 
 ---
-
+<a id="installation"></a>
 ## 📦 Installation
 
 Get OpsVerseAI running locally with these steps:
@@ -133,6 +133,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
+<a id="usage"></a>
 ## 🎮 Usage
 
 1. **Sign In**: Authenticate using Clerk.
@@ -148,7 +149,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **CVC / ZIP**: Any valid number
 
 ---
-
+<a id="configuration"></a>
 ## ⚙️ Configuration
 
 - **Stripe Webhook**: Register `/api/webhook` in [Stripe Dashboard](https://dashboard.stripe.com/webhooks) to handle subscription events.
@@ -157,7 +158,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **AWS S3**: Set up a bucket and IAM user with `s3:PutObject` permissions.
 
 ---
-
+<a id="contributing"></a>
 ## 🤝 Contributing
 
 We ❤️ contributions! Here’s how to get involved:
@@ -169,17 +170,19 @@ We ❤️ contributions! Here’s how to get involved:
 5. **Submit a PR**: Include a clear description and update documentation.
 6. **Review**: Address feedback and iterate.
 
+<a id="contact"></a>
 ## 📬 Contact
 
 - **Email**: [prayagtushar2016@gmail.com](mailto:prayagtushar2016@gmail.com)
 - **LinkedIn**: [linkedin.com/in/prayagtushar](https://www.linkedin.com/in/prayagtushar)
 - **GitHub**: [github.com/Prayag-09](https://github.com/Prayag-09)
 
+<a id="screenshots"></a>
 ## 📊 Screenshots
 
-![Home Page](./images/HomePage.png)  
-![Chat Interface](./images/ChatInterface.png)  
-![Payment Gateway](./images/PaymentPage.png)
+![Home Page](./public/images/HomePage.png)  
+![Chat Interface](./public/images/ChatInterface.png)  
+![Payment Gateway](./public/images/PaymentPage.png)
 
 ---
 

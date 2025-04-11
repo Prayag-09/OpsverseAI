@@ -85,12 +85,13 @@ export const GET = async (req: Request) => {
 				line_items: [
 					{
 						price_data: {
-							currency: 'USD',
-							product_data: {
-								name: 'OpsVerseAI Pro',
-								description: 'Unlimited PDF chat sessions',
-							},
+							currency: 'usd',
 							unit_amount: 2000,
+							product_data: {
+								name: 'OpsVerseAI Pro Plan',
+								description:
+									'Enjoy unlimited AI-powered PDF chat sessions with priority access and enhanced features.',
+							},
 							recurring: {
 								interval: 'month',
 							},
