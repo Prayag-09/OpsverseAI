@@ -53,10 +53,12 @@ export default async function Home() {
 			</div>
 
 			<section className='flex flex-col items-center max-w-4xl z-10 space-y-10'>
-				<h1 className='font-black text-5xl sm:text-6xl leading-tight text-white drop-shadow-[0_0_8px_rgba(99,102,241,0.3)]'>
+				<h1 className='font-black text-4xl sm:text-5xl leading-tight text-white drop-shadow-[0_0_8px_rgba(99,102,241,0.3)]'>
 					TL;DR? Chat With Your PDF 📄💬
 				</h1>
-
+				<h1 className='font-black text-2xl sm:text-4xl leading-tight text-white drop-shadow-[0_0_8px_rgba(99,102,241,0.3)]'>
+					Welcome to OpsverseAI
+				</h1>
 				<p className='text-lg sm:text-xl font-medium text-gray-300 leading-relaxed max-w-2xl'>
 					Upload any PDF—textbooks, reports, or research documents—and ask
 					questions effortlessly. OpsVerseAI delivers precise, document-based
