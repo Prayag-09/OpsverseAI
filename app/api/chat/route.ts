@@ -62,8 +62,6 @@ export async function POST(req: Request) {
 			? await getIntroChunks(chat.fileKey)
 			: await getMatches(lastMessage.content, chat.fileKey);
 
-		console.log('Retrieved context:', context);
-
 		const systemPrompt = `
 		You are Readora, a highly intelligent and articulate AI assistant designed to help users understand the content of uploaded PDF documents with clarity and precision.
 		
@@ -100,7 +98,7 @@ export async function POST(req: Request) {
 		`;
 
 		const result = streamText({
-			model: gemini('models/gemini-1.5-pro'),
+			model: gemini('models/gemini-2.0-flash'),
 			system: systemPrompt,
 			messages: messages.map((msg: { role: string; content: string }) => ({
 				role: msg.role as 'user' | 'assistant',

@@ -20,7 +20,6 @@ export async function POST(req: Request) {
 			);
 		}
 
-		console.log('Loading S3 file to Pinecone:', { file_key, fileName });
 		await loadS3toPinecone(file_key);
 
 		const [chat] = await db
