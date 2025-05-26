@@ -6,6 +6,7 @@
 <p align="center"><em>Transform static PDFs into dynamic, AI-powered conversations. Upload, ask, and unlock insights effortlessly.</em></p>
 
 <a id="quick-overview"></a>
+
 ## 🌟 Quick Overview
 
 OpsVerseAI is an innovative Next.js-based application that redefines document interaction. Upload any PDF—be it textbooks, research papers, or reports—and engage in natural, context-aware conversations powered by advanced AI (Gemini API) and vector search (Pinecone). With secure authentication (Clerk), premium subscriptions (Stripe), and a responsive UI (Tailwind CSS), it’s built for efficiency and scalability.
@@ -30,9 +31,11 @@ OpsVerseAI is an innovative Next.js-based application that redefines document in
 - [🤝 Contributing](#contributing)
 - [📬 Contact](#contact)
 - [📊 Screenshots](#screenshots)
+
 ---
 
 <a id="features"></a>
+
 ## 🚀 Features
 
 - **AI-Powered PDF Chat**: Upload PDFs and query with natural language (e.g., “Summarize Chapter 3” or “Explain Figure 2”).
@@ -45,7 +48,9 @@ OpsVerseAI is an innovative Next.js-based application that redefines document in
 - **Error Resilience**: Advanced handling for subscription and API edge cases.
 
 ---
+
 <a id="tech-stack"></a>
+
 ## 🛠 Tech Stack
 
 | **Category**       | **Technologies**                           |
@@ -58,7 +63,9 @@ OpsVerseAI is an innovative Next.js-based application that redefines document in
 | **Language**       | TypeScript                                 |
 
 ---
+
 <a id="installation"></a>
+
 ## 📦 Installation
 
 Get OpsVerseAI running locally with these steps:
@@ -91,10 +98,10 @@ NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
 # AWS S3
-NEXT_PUBLIC_AWS_ACCESS_KEY_ID=your_access_key
-NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY=your_secret_key
-NEXT_PUBLIC_AWS_REGION=your_region
-NEXT_PUBLIC_AWS_BUCKET_NAME=your_bucket_name
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_REGION=your_region
+AWS_BUCKET_NAME=your_bucket_name
 
 # Pinecone
 PINECONE_API_KEY=your_pinecone_api_key
@@ -134,6 +141,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ---
 
 <a id="usage"></a>
+
 ## 🎮 Usage
 
 1. **Sign In**: Authenticate using Clerk.
@@ -149,7 +157,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **CVC / ZIP**: Any valid number
 
 ---
+
 <a id="configuration"></a>
+
 ## ⚙️ Configuration
 
 - **Stripe Webhook**: Register `/api/webhook` in [Stripe Dashboard](https://dashboard.stripe.com/webhooks) to handle subscription events.
@@ -158,7 +168,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **AWS S3**: Set up a bucket and IAM user with `s3:PutObject` permissions.
 
 ---
+
 <a id="contributing"></a>
+
 ## 🤝 Contributing
 
 We ❤️ contributions! Here’s how to get involved:
@@ -171,6 +183,7 @@ We ❤️ contributions! Here’s how to get involved:
 6. **Review**: Address feedback and iterate.
 
 <a id="contact"></a>
+
 ## 📬 Contact
 
 - **Email**: [prayagtushar2016@gmail.com](mailto:prayagtushar2016@gmail.com)
@@ -178,6 +191,7 @@ We ❤️ contributions! Here’s how to get involved:
 - **GitHub**: [github.com/Prayag-09](https://github.com/Prayag-09)
 
 <a id="screenshots"></a>
+
 ## 📊 Screenshots
 
 ![Home Page](./public/images/HomePage.png)  

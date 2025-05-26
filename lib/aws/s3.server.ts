@@ -3,15 +3,15 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 export const downloadFromS3 = async (file_key: string) => {
 	try {
 		const s3 = new S3Client({
-			region: process.env.NEXT_PUBLIC_AWS_REGION!,
+			region: process.env.AWS_REGION!,
 			credentials: {
-				accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID!,
-				secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY!,
+				accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+				secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
 			},
 		});
 
 		const params = {
-			Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME!,
+			Bucket: process.env.AWS_BUCKET_NAME!,
 			Key: file_key,
 		};
 
